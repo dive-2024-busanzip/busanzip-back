@@ -10,6 +10,8 @@ import com.example.busanzipback.domain.map.dto.response.GetRestaurantResponse;
 import com.example.busanzipback.domain.map.entity.Restaurant;
 import com.example.busanzipback.domain.map.exception.MapErrorCode;
 import com.example.busanzipback.domain.map.exception.RestaurantNotFoundException;
+import com.example.busanzipback.domain.map.dto.response.GetRestaurantResponse;
+import com.example.busanzipback.domain.map.exception.MapErrorCode;
 import com.example.busanzipback.domain.map.repository.RestaurantRepository;
 
 import lombok.RequiredArgsConstructor;
