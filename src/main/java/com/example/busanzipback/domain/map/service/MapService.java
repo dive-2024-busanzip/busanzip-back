@@ -5,6 +5,11 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example.busanzipback.common.exception.BusinessException;
+import com.example.busanzipback.domain.map.dto.response.GetRestaurantDetailResponse;
+import com.example.busanzipback.domain.map.dto.response.GetRestaurantResponse;
+import com.example.busanzipback.domain.map.entity.Restaurant;
+import com.example.busanzipback.domain.map.exception.MapErrorCode;
+import com.example.busanzipback.domain.map.exception.RestaurantNotFoundException;
 import com.example.busanzipback.domain.map.dto.response.GetRestaurantResponse;
 import com.example.busanzipback.domain.map.exception.MapErrorCode;
 import com.example.busanzipback.domain.map.repository.RestaurantRepository;
@@ -23,4 +28,8 @@ public class MapService {
 		return restaurantRepository.findNearbyLocations(longitude, latitude).stream().map(GetRestaurantResponse::from).toList();
 	}
 
+	public GetRestaurantDetailResponse getRestaurant(Long restaurantId) {
+		Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(RestaurantNotFoundException::new);
+		return GetRestaurantDetailResponse.from(restaurant);
+	}
 }

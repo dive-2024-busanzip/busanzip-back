@@ -1,6 +1,7 @@
 package com.example.busanzipback.domain.map.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,4 +19,5 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 		nativeQuery = true)
 	List<Restaurant> findNearbyLocations(@Param("longitude") Double longitude, @Param("latitude") double latitude);
 
+	Optional<Restaurant> findById(Long restaurantId);
 }
