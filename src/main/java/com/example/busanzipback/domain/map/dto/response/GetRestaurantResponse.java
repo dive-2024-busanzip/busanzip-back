@@ -5,7 +5,7 @@ import com.example.busanzipback.domain.map.entity.Restaurant;
 import lombok.Builder;
 
 @Builder
-public record GetRestaurantResponse(Long restaurantId,
+public record GetRestaurantResponse(Integer restaurantId,
 									String restaurantName,
 									Double latitude,
 									Double longitude,
