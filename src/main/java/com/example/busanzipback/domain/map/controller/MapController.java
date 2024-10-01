@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.busanzipback.common.dto.SuccessResponse;
+import com.example.busanzipback.domain.map.dto.response.GetFestivityDetailResponse;
 import com.example.busanzipback.domain.map.dto.response.GetFestivityResponse;
 import com.example.busanzipback.domain.map.dto.response.GetRestaurantDetailResponse;
 import com.example.busanzipback.domain.map.dto.response.GetRestaurantResponse;
@@ -35,7 +36,7 @@ public class MapController {
 
 	@GetMapping("/restaurants/{restaurantId}")
 	public ResponseEntity<SuccessResponse<GetRestaurantDetailResponse>> getRestaurantDetail(
-		@PathVariable Long restaurantId
+		@PathVariable Integer restaurantId
 	){
 		return SuccessResponse.of(mapService.getRestaurant(restaurantId)).asHttp(HttpStatus.OK);
 	}
@@ -46,5 +47,12 @@ public class MapController {
 		@RequestParam(value = "longitude") Double longitude
 	){
 		return SuccessResponse.of(mapService.getFestivityList(latitude, longitude)).asHttp(HttpStatus.OK);
+	}
+
+	@GetMapping("/festivity/{festivityId}")
+	public ResponseEntity<SuccessResponse<GetFestivityDetailResponse>> getFestivityDetail(
+		@PathVariable Integer festivityId
+	){
+		return SuccessResponse.of(mapService.getFestivity(festivityId)).asHttp(HttpStatus.OK);
 	}
 }

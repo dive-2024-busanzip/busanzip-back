@@ -19,5 +19,5 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 		nativeQuery = true)
 	List<Restaurant> findNearbyLocations(@Param("longitude") Double longitude, @Param("latitude") double latitude);
 
-	Optional<Restaurant> findById(Long restaurantId);
+	Optional<Restaurant> findById(Integer restaurantId);
 }

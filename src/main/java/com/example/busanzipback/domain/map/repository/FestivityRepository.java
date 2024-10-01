@@ -20,5 +20,5 @@ public interface FestivityRepository extends JpaRepository<Festivity, Long> {
 		nativeQuery = true)
 	List<Festivity> findNearbyLocations(@Param("longitude") Double longitude, @Param("latitude") double latitude);
 
-	Optional<Festivity> findById(Long festivityId);
+	Optional<Festivity> findById(Integer festivityId);
 }
