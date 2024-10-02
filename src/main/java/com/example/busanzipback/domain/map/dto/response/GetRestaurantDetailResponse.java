@@ -5,13 +5,12 @@ import com.example.busanzipback.domain.map.entity.Restaurant;
 import lombok.Builder;
 
 @Builder
-public record GetRestaurantDetailResponse(Long restaurantId,
+public record GetRestaurantDetailResponse(Integer restaurantId,
 										  String restaurantName,
 										  String district,
 										  Double latitude,
 										  Double longitude,
 										  String address,
-										  String addressExtra,
 										  String contact,
 										  String homepage,
 										  String operatingHours,
@@ -29,7 +28,6 @@ public record GetRestaurantDetailResponse(Long restaurantId,
 			.latitude(restaurant.getLatitude())
 			.longitude(restaurant.getLongitude())
 			.address(restaurant.getAddress())
-			.addressExtra(restaurant.getAddressExtra())
 			.contact(restaurant.getContact())
 			.homepage(restaurant.getHomepage())
 			.operatingHours(restaurant.getOperatingHours())
