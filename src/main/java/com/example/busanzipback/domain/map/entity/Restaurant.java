@@ -18,7 +18,7 @@ public class Restaurant {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "restaurant_id")
-	private Long id;
+	private Integer id;
 	@Column(nullable = false)
 	private String restaurantName;
 	@Column(nullable = false)
@@ -29,7 +29,6 @@ public class Restaurant {
 	private Double longitude;
 	@Column(nullable = false)
 	private String address;
-	private String addressExtra;
 	private String contact;
 	private String homepage;
 	private String operatingHours;
@@ -41,14 +40,13 @@ public class Restaurant {
 	@Builder
 	public Restaurant(String restaurantName, String district, Double latitude, Double longitude,
 		String address,
-		String addressExtra, String contact, String homepage, String operatingHours, String mainMenu, String imageUrl,
+		String contact, String homepage, String operatingHours, String mainMenu, String imageUrl,
 		String thumbnailImageUrl, String details) {
 		this.restaurantName = restaurantName;
 		this.district = district;
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.address = address;
-		this.addressExtra = addressExtra;
 		this.contact = contact;
 		this.homepage = homepage;
 		this.operatingHours = operatingHours;
