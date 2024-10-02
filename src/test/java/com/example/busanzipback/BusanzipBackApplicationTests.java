@@ -6,7 +6,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
-@ActiveProfiles("test")
+@TestPropertySource(properties = {
+	"spring.datasource.url=jdbc:h2:mem:my_db;MODE=MySQL",
+	"spring.datasource.driver-class-name=org.h2.Driver"
+})
 class BusanzipBackApplicationTests {
 
 	@Test
