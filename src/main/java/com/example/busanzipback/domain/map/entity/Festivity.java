@@ -20,6 +20,8 @@ public class Festivity {
 	@Column(name = "festivity_id")
 	private Integer id;
 	@Column(nullable = false)
+	private Integer contentId;
+	@Column(nullable = false)
 	private String contentName;
 	@Column(nullable = false)
 	private String district;
@@ -45,10 +47,11 @@ public class Festivity {
 	private String facilities;
 
 	@Builder
-	public Festivity(String contentName, String district, Double latitude, Double longitude, String place, String title,
+	public Festivity(Integer contentId, String contentName, String district, Double latitude, Double longitude, String place, String title,
 		String subtitle, String mainPlace, String address, String additionalAddress, String contact, String website,
 		String transportInfo, String operationPeriod, String operatingDaysHours, String usageFee, String imageUrl,
 		String thumbnailUrl, String details, String facilities) {
+		this.contentId = contentId;
 		this.contentName = contentName;
 		this.district = district;
 		this.latitude = latitude;
