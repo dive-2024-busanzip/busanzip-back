@@ -6,6 +6,7 @@ import lombok.Builder;
 
 @Builder
 public record GetFestivityResponse(Integer festivityId,
+								   Integer contentId,
 								   String contentName,
 								   Double latitude,
 								   Double longitude,
@@ -16,6 +17,7 @@ public record GetFestivityResponse(Integer festivityId,
 	public static GetFestivityResponse from(Festivity festivity){
 		return GetFestivityResponse.builder()
 			.festivityId(festivity.getId())
+			.contentId(festivity.getContentId())
 			.contentName(festivity.getContentName())
 			.latitude(festivity.getLatitude())
 			.longitude(festivity.getLongitude())

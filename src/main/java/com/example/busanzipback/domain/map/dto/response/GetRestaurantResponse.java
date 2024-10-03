@@ -6,6 +6,7 @@ import lombok.Builder;
 
 @Builder
 public record GetRestaurantResponse(Integer restaurantId,
+									Integer contentId,
 									String restaurantName,
 									Double latitude,
 									Double longitude,
@@ -15,6 +16,7 @@ public record GetRestaurantResponse(Integer restaurantId,
 	public static GetRestaurantResponse from(Restaurant restaurant){
 		return GetRestaurantResponse.builder()
 			.restaurantId(restaurant.getId())
+			.contentId(restaurant.getContentId())
 			.restaurantName(restaurant.getRestaurantName())
 			.latitude(restaurant.getLatitude())
 			.longitude(restaurant.getLongitude())

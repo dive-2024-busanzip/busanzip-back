@@ -20,6 +20,8 @@ public class Restaurant {
 	@Column(name = "restaurant_id")
 	private Integer id;
 	@Column(nullable = false)
+	private Integer contentId;
+	@Column(nullable = false)
 	private String restaurantName;
 	@Column(nullable = false)
 	private String district;
@@ -38,10 +40,11 @@ public class Restaurant {
 	private String details;
 
 	@Builder
-	public Restaurant(String restaurantName, String district, Double latitude, Double longitude,
+	public Restaurant(Integer contentId, String restaurantName, String district, Double latitude, Double longitude,
 		String address,
 		String contact, String homepage, String operatingHours, String mainMenu, String imageUrl,
 		String thumbnailImageUrl, String details) {
+		this.contentId = contentId;
 		this.restaurantName = restaurantName;
 		this.district = district;
 		this.latitude = latitude;
