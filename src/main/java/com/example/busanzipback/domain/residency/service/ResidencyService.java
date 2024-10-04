@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -18,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import com.example.busanzipback.domain.residency.dto.request.ResidencySearchRequest;
 import com.example.busanzipback.domain.residency.dto.response.NearestItem;
 import com.example.busanzipback.domain.residency.dto.response.ResidencySearchResponse;
+import com.example.busanzipback.domain.residency.util.RepositoryMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 
@@ -31,6 +33,8 @@ public class ResidencyService {
 
 	private final RestTemplate restTemplate;
 	private final ObjectMapper objectMapper;
+	private final RepositoryMapper repositoryMapper;
+
 	public List<ResidencySearchResponse> searchResidency(ResidencySearchRequest residencySearchRequest) {
 		String pythonApiUrl = "http://localhost:5000/recommend_houses";
 
@@ -78,14 +82,15 @@ public class ResidencyService {
 			itemMap.put(category, item);
 		}
 		for(Item item : itemMap.values()){
+			Object[] info = repositoryMapper.getDetailInfoById(item.getCategory(), item.getId());
 			nearestItemList.add(NearestItem.builder()
 					.item(item.getCategory())
 					.dist(item.getDist())
 					.distGroup(item.getDistGroup())
 					.id(item.getId())
-					.name("test")
-					.latitude(0.123456)
-					.longitude(0.123456)
+					.name((String)info[0])
+					.latitude((Double)info[1])
+					.longitude((Double)info[2])
 					.build());
 		}
 		return nearestItemList;
@@ -98,6 +103,7 @@ public class ResidencyService {
 		else if(category.contains("id")) category = category.replace("_id", "");
 		return category;
 	}
+
 	@Getter
 	@Setter
 	private static class Item{

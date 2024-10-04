@@ -5,6 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
+import com.example.busanzipback.domain.residency.util.RepositoryMapper;
+
 @SpringBootApplication
 public class BusanzipBackApplication {
 
