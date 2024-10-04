@@ -8,3 +8,11 @@ spring:
     active: prod
   config:
     import: db.yml
+
+api:
+  route:
+    car:
+      key-id: ${CAR_ROUTE_API_KEY_ID}
+      key: ${CAR_ROUTE_API_KEY}
+    transit:
+      key: ${TRANSIT_ROUTE_API_KEY}
