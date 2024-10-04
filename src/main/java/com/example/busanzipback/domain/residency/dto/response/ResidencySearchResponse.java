@@ -12,9 +12,11 @@ public record ResidencySearchResponse(Integer id,
 									  String district,
 									  String address,
 									  Integer household,
+									  String type,
 									  Double latitude,
 									  Double longitude,
 									  List<NearestItem> nearestItemList,
-									  String type) {
+									  List<Job> jobList
+									  ) {
 
 }

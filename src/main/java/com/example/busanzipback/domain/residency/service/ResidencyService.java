@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -17,11 +16,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.busanzipback.domain.residency.dto.request.ResidencySearchRequest;
+import com.example.busanzipback.domain.residency.dto.response.Job;
 import com.example.busanzipback.domain.residency.dto.response.NearestItem;
 import com.example.busanzipback.domain.residency.dto.response.ResidencySearchResponse;
 import com.example.busanzipback.domain.residency.util.RepositoryMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +51,7 @@ public class ResidencyService {
 			requestEntity,
 			Map.class
 		);
-
+		objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE);
 		Map<String, Object> responseBody = new HashMap<>(Objects.requireNonNull(pythonResponse.getBody()));
 		System.out.println();
 
@@ -61,10 +62,34 @@ public class ResidencyService {
 				.district((String)house.get("district"))
 				.address((String)house.get("address"))
 				.household((Integer)house.get("household"))
+				.type((String)house.get("type"))
 				.latitude((Double)house.get("latitude"))
 				.longitude((Double)house.get("longitude"))
+				.jobList(passingJobList(house))
 				.nearestItemList(passingNearestItemList(house))
-				.type((String)house.get("type"))
+				.build();
+		}).collect(Collectors.toList());
+	}
+
+	private List<Job> passingJobList(Map<String, Object> house) {
+		List<Map<String, Object>> jobList = (List<Map<String, Object>>) house.get("jobs");
+		return jobList.stream().map(job -> {
+			return Job.builder()
+				.address((String)job.get("address"))
+				.company((String)job.get("company"))
+				.companyUrl((String)job.get("company_url"))
+				.distance((Double)job.get("distance"))
+				.educationLevel((String)job.get("education Level"))
+				.experience_level((String)job.get("experience_lecel"))
+				.id((Integer)job.get("id"))
+				.industry((String)job.get("industry"))
+				.jobType((String)job.get("job_type"))
+				.location((String)job.get("location"))
+				.latitude((Double)job.get("latitude"))
+				.longitude((Double)job.get("longitude"))
+				.pageUrl((String)job.get("page_url"))
+				.salary((String)job.get("salary"))
+				.title((String)job.get("title"))
 				.build();
 		}).collect(Collectors.toList());
 	}
