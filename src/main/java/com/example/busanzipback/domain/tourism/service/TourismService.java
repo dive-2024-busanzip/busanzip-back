@@ -10,6 +10,10 @@ import com.example.busanzipback.domain.tourism.dto.TransitRouteRequest.Location;
 import com.example.busanzipback.domain.tourism.dto.TransitRouteRequest.Point;
 import com.example.busanzipback.domain.tourism.dto.TransitRouteResponse;
 import com.example.busanzipback.domain.tourism.entity.Accommodation;
+import com.example.busanzipback.domain.tourism.entity.Experience;
+import com.example.busanzipback.domain.tourism.entity.Shopping;
+import com.example.busanzipback.domain.tourism.entity.TourismRestaurant;
+import com.example.busanzipback.domain.tourism.entity.TouristAttraction;
 import com.example.busanzipback.domain.tourism.entity.TravelType;
 import com.example.busanzipback.domain.tourism.repository.AccommodationRepository;
 import com.example.busanzipback.domain.tourism.repository.ExperienceRepository;
@@ -53,22 +57,30 @@ public class TourismService {
     private final AccommodationRepository accommodationRepository;
 
     public TourismResponse create(TourismRequest request) {
-        Map<Integer, Long> restaurantScore = null;
-        Map<Integer, Long> shoppingScore = null;
-        Map<Integer, Long> touristAttractionScore = null;
-        Map<Integer, Long> experienceScore = null;
+        List<Long> restaurantCandidateIds = null;
+        List<Long> shoppingCandidateIds = null;
+        List<Long> touristAttractionCandidateIds = null;
+        List<Long> experienceCandidateIds = null;
+        int restaurantIdx = 0;
+        int shoppingIdx = 0;
+        int touristAttractionIdx = 0;
+        int experienceIdx = 0;
 
         if(request.getEatingCount() > 0) {
-            restaurantScore = calculateScore(request.getEatingRequirements(), TravelType.RESTAURANT);
+            restaurantCandidateIds = getCandidateIds(request.getEatingRequirements(), TravelType.RESTAURANT);
+            System.out.println(restaurantCandidateIds.size());
         }
         if(request.getShoppingCount() > 0) {
-            shoppingScore = calculateScore(request.getShoppingRequirements(), TravelType.SHOPPING);
+            shoppingCandidateIds = getCandidateIds(request.getShoppingRequirements(), TravelType.SHOPPING);
+            System.out.println(shoppingCandidateIds.size());
         }
         if(request.getTouristAttractionCount() > 0) {
-            touristAttractionScore = calculateScore(request.getTouristAttractionRequirements(), TravelType.TOURIST_ATTRACTION);
+            touristAttractionCandidateIds = getCandidateIds(request.getTouristAttractionRequirements(), TravelType.TOURIST_ATTRACTION);
+            System.out.println(touristAttractionCandidateIds.size());
         }
         if(request.getExperienceCount() > 0) {
-            experienceScore = calculateScore(request.getExperienceRequirements(), TravelType.EXPERIENCE);
+            experienceCandidateIds = getCandidateIds(request.getExperienceRequirements(), TravelType.EXPERIENCE);
+            System.out.println(experienceCandidateIds.size());
         }
 
         String[] sequence = request.getSequence();
@@ -80,16 +92,20 @@ public class TourismService {
         for (String type : sequence) {
             switch (type) {
                 case "RESTAURANT":
-                    lastPlace = addPlacesToCourse(placeList, restaurantScore, lastPlace, TravelType.RESTAURANT, maxMoveMin, isUsingCar);
+                    lastPlace = addPlacesToCourse(placeList, restaurantCandidateIds, lastPlace, TravelType.RESTAURANT, maxMoveMin, isUsingCar, restaurantIdx);
+                    restaurantIdx++;
                     break;
                 case "SHOPPING":
-                    lastPlace = addPlacesToCourse(placeList, shoppingScore, lastPlace, TravelType.SHOPPING, maxMoveMin, isUsingCar);
+                    lastPlace = addPlacesToCourse(placeList, shoppingCandidateIds, lastPlace, TravelType.SHOPPING, maxMoveMin, isUsingCar, shoppingIdx);
+                    shoppingIdx++;
                     break;
                 case "TOURIST_ATTRACTION":
-                    lastPlace = addPlacesToCourse(placeList, touristAttractionScore, lastPlace, TravelType.TOURIST_ATTRACTION, maxMoveMin, isUsingCar);
+                    lastPlace = addPlacesToCourse(placeList, touristAttractionCandidateIds, lastPlace, TravelType.TOURIST_ATTRACTION, maxMoveMin, isUsingCar, touristAttractionIdx);
+                    touristAttractionIdx++;
                     break;
                 case "EXPERIENCE":
-                    lastPlace = addPlacesToCourse(placeList, experienceScore, lastPlace, TravelType.EXPERIENCE, maxMoveMin, isUsingCar);
+                    lastPlace = addPlacesToCourse(placeList, experienceCandidateIds, lastPlace, TravelType.EXPERIENCE, maxMoveMin, isUsingCar, experienceIdx);
+                    experienceIdx++;
                     break;
                 case "ACCOMMODATION":
                     lastPlace = addAccommodationToCourse(placeList, lastPlace, request);
@@ -100,55 +116,45 @@ public class TourismService {
     }
 
     // TODO: 스코어 매기기
-    private Map<Integer, Long> calculateScore(String eatingRequirements, TravelType travelType) {
-        Map<Integer, Long> score = new ConcurrentHashMap<>();
+    private List<Long> getCandidateIds(String eatingRequirements, TravelType travelType) {
         if(travelType == TravelType.RESTAURANT) {
-            score.put(1, 70L);
-            score.put(2, 72L);
-            score.put(3, 77L);
-            score.put(4, 83L);
-            score.put(5, 87L);
+            return tourismRestaurantRepository.findAll().stream()
+                    .map(TourismRestaurant::getId)
+                    .toList();
         }
         if(travelType == TravelType.SHOPPING) {
-            score.put(1, 292L);
-            score.put(2, 293L);
-            score.put(3, 294L);
-            score.put(4, 300L);
-            score.put(5, 327L);
+            return shoppingRepository.findAll().stream()
+                    .map(Shopping::getId)
+                    .toList();
         }
         if(travelType == TravelType.TOURIST_ATTRACTION) {
-            score.put(1, 255L);
-            score.put(2, 256L);
-            score.put(3, 257L);
-            score.put(4, 258L);
-            score.put(5, 259L);
+            return touristAttractionRepository.findAll().stream()
+                    .map(TouristAttraction::getId)
+                    .toList();
         }
         if(travelType == TravelType.EXPERIENCE) {
-            score.put(1, 43L);
-            score.put(2, 44L);
-            score.put(3, 139L);
-            score.put(4, 140L);
-            score.put(5, 336L);
+            return experienceRepository.findAll().stream()
+                    .map(Experience::getId)
+                    .toList();
         }
-        return score;
+        throw new IllegalArgumentException();
     }
 
-    private Place addPlacesToCourse(List<Place> placeList, Map<Integer, Long> scoreMap, Place lastPlace, TravelType travelType, int maxMoveMin, boolean isUsingCar) {
-        for (Map.Entry<Integer, Long> entry : scoreMap.entrySet()) {
-            Long placeId = entry.getValue();
-            Place place = getPlaceById(placeId, travelType);
+    private Place addPlacesToCourse(List<Place> placeList, List<Long> candidateIds, Place lastPlace, TravelType travelType, int maxMoveMin, boolean isUsingCar, int idx) {
+        for (int i= idx; i < candidateIds.size(); i++) {
+            Place place = getPlaceById(candidateIds.get(i), travelType);
 
             // 첫 장소인 경우
             if (lastPlace == null) {
                 placeList.add(place);
-                scoreMap.remove(entry.getKey());
+                System.out.println("장소: " + place.getName());
                 return place;
             }
             else {
                 double travelTime = getTravelTime(lastPlace.getLatitude(), lastPlace.getLongitude(), place.getLatitude(), place.getLongitude(), isUsingCar);
                 if (travelTime < maxMoveMin) {
                     placeList.add(place);
-                    scoreMap.remove(entry.getKey());
+                    System.out.println("다음 장소: " + place.getName());
                     return place;
                 }
             }
@@ -221,6 +227,9 @@ public class TourismService {
                     .queryParam("start", start)
                     .queryParam("goal", goal)
                     .toUriString();
+
+            System.out.println(start);
+            System.out.println(goal);
 
             HttpHeaders headers = new HttpHeaders();
             headers.set("X-NCP-APIGW-API-KEY-ID", CAR_ROUTE_API_KEY_ID);
