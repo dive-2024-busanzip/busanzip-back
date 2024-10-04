@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpEntity;
@@ -20,7 +21,9 @@ import com.example.busanzipback.domain.residency.dto.response.ResidencySearchRes
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +47,7 @@ public class ResidencyService {
 			Map.class
 		);
 
-		Map<String, Object> responseBody = new HashMap<>(pythonResponse.getBody());
+		Map<String, Object> responseBody = new HashMap<>(Objects.requireNonNull(pythonResponse.getBody()));
 		System.out.println();
 
 		List<Map<String, Object>> recommendedHouseList = (List<Map<String, Object>>) responseBody.get("recommended_houses");
@@ -56,14 +59,56 @@ public class ResidencyService {
 				.household((Integer)house.get("household"))
 				.latitude((Double)house.get("latitude"))
 				.longitude((Double)house.get("longitude"))
-				.nearestItemList(pasingNearestItemList(house))
+				.nearestItemList(passingNearestItemList(house))
 				.type((String)house.get("type"))
 				.build();
 		}).collect(Collectors.toList());
 	}
 
-	private List<NearestItem> pasingNearestItemList(Map<String, Object> house) {
-		return null;
+	private List<NearestItem> passingNearestItemList(Map<String, Object> house) {
+		List<NearestItem> nearestItemList = new ArrayList<>();
+		Map<String, Item> itemMap = new HashMap<>();
+		for(String key : house.keySet()){
+			if(!key.contains("nearest")) continue;
+			String category = getCategory(key);
+			Item item = itemMap.getOrDefault(category, new Item(category));
+			if(key.contains("dist_group")) item.setDistGroup((Integer)house.get(key));
+			else if(key.contains("dist")) item.setDist((Double)house.get(key));
+			else if(key.contains("id")) item.setId(house.get(key));
+			itemMap.put(category, item);
+		}
+		for(Item item : itemMap.values()){
+			nearestItemList.add(NearestItem.builder()
+					.item(item.getCategory())
+					.dist(item.getDist())
+					.distGroup(item.getDistGroup())
+					.id(item.getId())
+					.name("test")
+					.latitude(0.123456)
+					.longitude(0.123456)
+					.build());
+		}
+		return nearestItemList;
 	}
 
+	private String getCategory(String key){
+		String category = key.replace("nearest_", "");
+		if(category.contains("dist_group")) category = category.replace("_dist_group", "");
+		else if(category.contains("dist")) category = category.replace("_dist", "");
+		else if(category.contains("id")) category = category.replace("_id", "");
+		return category;
+	}
+	@Getter
+	@Setter
+	private static class Item{
+
+		String category;
+		Double dist;
+		Integer distGroup;
+		Object id;
+
+		public Item(String category){
+			this.category = category;
+		}
+	}
 }

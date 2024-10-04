@@ -6,7 +6,7 @@ import lombok.Builder;
 public record NearestItem(String item,
 						  Double dist,
 						  Integer distGroup,
-						  Integer id,
+						  Object id,
 						  String name,
 						  Double latitude,
 						  Double longitude) {
