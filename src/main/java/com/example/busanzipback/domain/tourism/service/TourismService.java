@@ -1,5 +1,8 @@
 package com.example.busanzipback.domain.tourism.service;
 
+import com.example.busanzipback.domain.map.repository.RestaurantRepository;
+import com.example.busanzipback.domain.tourism.dto.CandidateRequest;
+import com.example.busanzipback.domain.tourism.dto.CandidateResponse;
 import com.example.busanzipback.domain.tourism.dto.CarRouteResponse;
 import com.example.busanzipback.domain.tourism.dto.Place;
 import com.example.busanzipback.domain.tourism.dto.TourismRequest;
@@ -21,6 +24,7 @@ import com.example.busanzipback.domain.tourism.repository.TourismRestaurantRepos
 import com.example.busanzipback.domain.tourism.repository.ShoppingRepository;
 import com.example.busanzipback.domain.tourism.repository.TouristAttractionRepository;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -30,6 +34,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -42,6 +47,7 @@ public class TourismService {
     private final RestTemplate restTemplate;
     private static final String CAR_ROUTE_API_URL = "https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving";
     private static final String TRANSIT_ROUTE_API_URL = "https://routes.googleapis.com/directions/v2:computeRoutes";
+    private final RestaurantRepository restaurantRepository;
     @Value("${api.route.car.key-id}")
     private String CAR_ROUTE_API_KEY_ID;
     @Value("${api.route.car.key}")
@@ -57,31 +63,29 @@ public class TourismService {
     private final AccommodationRepository accommodationRepository;
 
     public TourismResponse create(TourismRequest request) {
-        List<Long> restaurantCandidateIds = null;
-        List<Long> shoppingCandidateIds = null;
-        List<Long> touristAttractionCandidateIds = null;
-        List<Long> experienceCandidateIds = null;
+        List<Long> restaurantCandidateIds;
+        List<Long> shoppingCandidateIds;
+        List<Long> touristAttractionCandidateIds;
+        List<Long> experienceCandidateIds;
         int restaurantIdx = 0;
         int shoppingIdx = 0;
         int touristAttractionIdx = 0;
         int experienceIdx = 0;
 
-        if(request.getEatingCount() > 0) {
-            restaurantCandidateIds = getCandidateIds(request.getEatingRequirements(), TravelType.RESTAURANT);
-            System.out.println(restaurantCandidateIds.size());
-        }
-        if(request.getShoppingCount() > 0) {
-            shoppingCandidateIds = getCandidateIds(request.getShoppingRequirements(), TravelType.SHOPPING);
-            System.out.println(shoppingCandidateIds.size());
-        }
-        if(request.getTouristAttractionCount() > 0) {
-            touristAttractionCandidateIds = getCandidateIds(request.getTouristAttractionRequirements(), TravelType.TOURIST_ATTRACTION);
-            System.out.println(touristAttractionCandidateIds.size());
-        }
-        if(request.getExperienceCount() > 0) {
-            experienceCandidateIds = getCandidateIds(request.getExperienceRequirements(), TravelType.EXPERIENCE);
-            System.out.println(experienceCandidateIds.size());
-        }
+        List<List<Long>> candidates = getCandidateIds(request);
+
+        restaurantCandidateIds = candidates.get(0);
+        shoppingCandidateIds = candidates.get(1);
+        touristAttractionCandidateIds = candidates.get(2);
+        experienceCandidateIds = candidates.get(3);
+
+        List<List<Long>> finalCandidates = addRestPlace(restaurantCandidateIds, shoppingCandidateIds,
+                touristAttractionCandidateIds, experienceCandidateIds);
+
+        restaurantCandidateIds = finalCandidates.get(0);
+        shoppingCandidateIds = finalCandidates.get(1);
+        touristAttractionCandidateIds = finalCandidates.get(2);
+        experienceCandidateIds = finalCandidates.get(3);
 
         String[] sequence = request.getSequence();
         List<Place> placeList = new ArrayList<>();
@@ -115,29 +119,94 @@ public class TourismService {
         return TourismResponse.of(placeList);
     }
 
-    // TODO: 스코어 매기기
-    private List<Long> getCandidateIds(String eatingRequirements, TravelType travelType) {
-        if(travelType == TravelType.RESTAURANT) {
-            return tourismRestaurantRepository.findAll().stream()
-                    .map(TourismRestaurant::getId)
-                    .toList();
+    private List<List<Long>> getCandidateIds(TourismRequest request) {
+        String url = "http://54.180.135.195:5000/recommend_tours";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        List<String> types = new ArrayList<>();
+        List<String> requirements = new ArrayList<>();
+
+        if (request.getEatingCount() > 0) {
+            types.add("restaurant");
+            StringBuilder builder = new StringBuilder();
+            for (String eatingType : request.getEatingTypes()) {
+                builder.append(eatingType).append(", ");
+            }
+            builder.append(request.getLikeMenus()).append(", ").append(request.getEatingRequirements());
+            String totalEatingRequirements = builder.toString();
+            requirements.add(totalEatingRequirements);
         }
-        if(travelType == TravelType.SHOPPING) {
-            return shoppingRepository.findAll().stream()
-                    .map(Shopping::getId)
-                    .toList();
+
+        if (request.getShoppingCount() > 0) {
+            types.add("shopping");
+            requirements.add(request.getShoppingRequirements());
         }
-        if(travelType == TravelType.TOURIST_ATTRACTION) {
-            return touristAttractionRepository.findAll().stream()
-                    .map(TouristAttraction::getId)
-                    .toList();
+
+        if (request.getTouristAttractionCount() > 0) {
+            types.add("attraction");
+            requirements.add(request.getTouristAttractionRequirements());
         }
-        if(travelType == TravelType.EXPERIENCE) {
-            return experienceRepository.findAll().stream()
-                    .map(Experience::getId)
-                    .toList();
+
+        if (request.getExperienceCount() > 0) {
+            types.add("experience");
+            requirements.add(request.getExperienceRequirements());
         }
-        throw new IllegalArgumentException();
+        CandidateRequest requestBody = new CandidateRequest(types, requirements);
+
+        HttpEntity<CandidateRequest> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<CandidateResponse> responseEntity = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                requestEntity,
+                CandidateResponse.class
+        );
+
+        CandidateResponse response = responseEntity.getBody();
+
+        List<List<Long>> result = new ArrayList<>();
+        result.add(response.getTours().get(0));
+        result.add(response.getTours().get(1));
+        result.add(response.getTours().get(2));
+        result.add(response.getTours().get(3));
+        return result;
+    }
+
+    private List<List<Long>> addRestPlace(List<Long> restaurantCandidateIds, List<Long> shoppingCandidateIds,
+                              List<Long> touristAttractionCandidateIds, List<Long> experienceCandidateIds) {
+        List<TourismRestaurant> restaurants = tourismRestaurantRepository.findAll();
+        List<Shopping> shoppings = shoppingRepository.findAll();
+        List<TouristAttraction> attractions = touristAttractionRepository.findAll();
+        List<Experience> experiences = experienceRepository.findAll();
+
+        restaurants.stream()
+                .map(TourismRestaurant::getId)
+                .filter(id -> !restaurantCandidateIds.contains(id))
+                .forEach(restaurantCandidateIds::add);
+
+        shoppings.stream()
+                .map(Shopping::getId)
+                .filter(id -> !shoppingCandidateIds.contains(id))
+                .forEach(shoppingCandidateIds::add);
+
+        attractions.stream()
+                .map(TouristAttraction::getId)
+                .filter(id -> !touristAttractionCandidateIds.contains(id))
+                .forEach(touristAttractionCandidateIds::add);
+
+        experiences.stream()
+                .map(Experience::getId)
+                .filter(id -> !experienceCandidateIds.contains(id))
+                .forEach(experienceCandidateIds::add);
+
+        List<List<Long>> result = new ArrayList<>();
+        result.add(restaurantCandidateIds);
+        result.add(shoppingCandidateIds);
+        result.add(touristAttractionCandidateIds);
+        result.add(experienceCandidateIds);
+        return result;
     }
 
     private Place addPlacesToCourse(List<Place> placeList, List<Long> candidateIds, Place lastPlace, TravelType travelType, int maxMoveMin, boolean isUsingCar, int idx) {
