@@ -13,7 +13,7 @@ import com.example.busanzipback.domain.tourism.entity.Accommodation;
 import com.example.busanzipback.domain.tourism.entity.TravelType;
 import com.example.busanzipback.domain.tourism.repository.AccommodationRepository;
 import com.example.busanzipback.domain.tourism.repository.ExperienceRepository;
-import com.example.busanzipback.domain.tourism.repository.RestaurantRepository;
+import com.example.busanzipback.domain.tourism.repository.TourismRestaurantRepository;
 import com.example.busanzipback.domain.tourism.repository.ShoppingRepository;
 import com.example.busanzipback.domain.tourism.repository.TouristAttractionRepository;
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class TourismService {
     private String TRANSIT_API_KEY;
 
 
-    private final RestaurantRepository restaurantRepository;
+    private final TourismRestaurantRepository tourismRestaurantRepository;
     private final ShoppingRepository shoppingRepository;
     private final TouristAttractionRepository touristAttractionRepository;
     private final ExperienceRepository experienceRepository;
@@ -195,7 +195,7 @@ public class TourismService {
 
     private Place getPlaceById(Long id, TravelType travelType) {
         if(travelType == TravelType.RESTAURANT) {
-            return Place.from(restaurantRepository.findById(id).orElseThrow());
+            return Place.from(tourismRestaurantRepository.findById(id).orElseThrow());
         }
         if(travelType == TravelType.SHOPPING) {
             return Place.from(shoppingRepository.findById(id).orElseThrow());

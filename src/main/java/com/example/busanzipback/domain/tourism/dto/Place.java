@@ -3,7 +3,7 @@ package com.example.busanzipback.domain.tourism.dto;
 
 import com.example.busanzipback.domain.tourism.entity.Accommodation;
 import com.example.busanzipback.domain.tourism.entity.Experience;
-import com.example.busanzipback.domain.tourism.entity.Restaurant;
+import com.example.busanzipback.domain.tourism.entity.TourismRestaurant;
 import com.example.busanzipback.domain.tourism.entity.Shopping;
 import com.example.busanzipback.domain.tourism.entity.TouristAttraction;
 import com.example.busanzipback.domain.tourism.entity.TravelType;
@@ -30,17 +30,17 @@ public class Place {
     private String contact;
     private String repMenu; // X(NULL): 쇼핑, 명소, 체험, 숙박
 
-    public static Place from(Restaurant restaurant) {
+    public static Place from(TourismRestaurant tourismRestaurant) {
         return Place.builder()
                 .type(TravelType.RESTAURANT.getTravelTypeStr())
-                .name(restaurant.getName())
-                .description(restaurant.getDetails())
-                .latitude(restaurant.getLatitude())
-                .longitude(restaurant.getLongitude())
-                .usageTime(restaurant.getUsageTime())
-                .imageURL(restaurant.getThumbnailUrl())
-                .contact(restaurant.getPhone())
-                .repMenu(restaurant.getRepresentativeMenu())
+                .name(tourismRestaurant.getName())
+                .description(tourismRestaurant.getDetails())
+                .latitude(tourismRestaurant.getLatitude())
+                .longitude(tourismRestaurant.getLongitude())
+                .usageTime(tourismRestaurant.getUsageTime())
+                .imageURL(tourismRestaurant.getThumbnailUrl())
+                .contact(tourismRestaurant.getPhone())
+                .repMenu(tourismRestaurant.getRepresentativeMenu())
                 .build();
     }
 
