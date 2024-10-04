@@ -167,10 +167,24 @@ public class TourismService {
         CandidateResponse response = responseEntity.getBody();
 
         List<List<Long>> result = new ArrayList<>();
-        result.add(response.getTours().get(0));
-        result.add(response.getTours().get(1));
-        result.add(response.getTours().get(2));
-        result.add(response.getTours().get(3));
+        for (int i = 0; i < 4; i++) {
+            result.add(new ArrayList<>());
+        }
+        int tourIdx = 0;
+        for (String type : response.getTypes()) {
+            if (type.equals("restaurant")) {
+                result.get(0).addAll(response.getTours().get(tourIdx++));
+            }
+            if (type.equals("shopping")) {
+                result.get(1).addAll(response.getTours().get(tourIdx++));
+            }
+            if (type.equals("attraction")) {
+                result.get(2).addAll(response.getTours().get(tourIdx++));
+            }
+            if(type.equals("experience")) {
+                result.get(3).addAll(response.getTours().get(tourIdx++));
+            }
+        }
         return result;
     }
 
