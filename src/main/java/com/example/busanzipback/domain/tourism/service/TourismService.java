@@ -48,12 +48,10 @@ public class TourismService {
     private static final String CAR_ROUTE_API_URL = "https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving";
     private static final String TRANSIT_ROUTE_API_URL = "https://routes.googleapis.com/directions/v2:computeRoutes";
     private final RestaurantRepository restaurantRepository;
-    @Value("${api.route.car.key-id}")
-    private String CAR_ROUTE_API_KEY_ID;
-    @Value("${api.route.car.key}")
-    private String CAR_ROUTE_API_KEY;
-    @Value("${api.route.transit.key}")
-    private String TRANSIT_API_KEY;
+
+    private String CAR_ROUTE_API_KEY_ID="Q1TGnwkYdvbgnvZHItbkoeTJX2XKszJi9WWIyFWs";
+    private String CAR_ROUTE_API_KEY="q114px2dot";
+    private String TRANSIT_API_KEY="AIzaSyDyhdgZzpvuVkj2yxaqJyd3UiqaiEZ4MK4";
 
 
     private final TourismRestaurantRepository tourismRestaurantRepository;
