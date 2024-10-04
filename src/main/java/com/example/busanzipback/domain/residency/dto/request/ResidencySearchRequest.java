@@ -27,5 +27,7 @@ public record ResidencySearchRequest(@DistanceValidation.ValidDistance Distance 
 									 @NotNull Boolean danceAcademy,
 									 @NotNull Boolean studyRoom,
 									 @DistanceValidation.ValidDistance Distance beach,
-									 @DistanceValidation.ValidDistance Distance park) {
+									 @DistanceValidation.ValidDistance Distance park,
+									 Double customLatitude,
+									 Double customLongitude) {
 }
