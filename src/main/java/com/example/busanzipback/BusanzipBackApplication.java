@@ -16,5 +16,4 @@ public class BusanzipBackApplication {
 	public RestTemplate restTemplate(){
 		return new RestTemplate();
 	}
-
 }
