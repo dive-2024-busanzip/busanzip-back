@@ -37,7 +37,7 @@ public class ResidencyService {
 	private final RepositoryMapper repositoryMapper;
 
 	public List<ResidencySearchResponse> searchResidency(ResidencySearchRequest residencySearchRequest) {
-		String pythonApiUrl = "http://localhost:5000/recommend_houses";
+		String pythonApiUrl = "http://172.31.0.121:5000/recommend_houses";
 
 		objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
 		Map<String, Object> requestBody = objectMapper.convertValue(residencySearchRequest, Map.class);
