@@ -259,11 +259,11 @@ public class TourismService {
             longitude = lastPlace.getLongitude();
             Accommodation accommodation = accommodationRepository.findNearestByKeyword(latitude, longitude, keywords[0]).orElseThrow();
             place = getPlaceById(accommodation.getId(), TravelType.ACCOMMODATION);
+            int moveMinute = getTravelTime(lastPlace.getLatitude(), lastPlace.getLongitude(), place.getLatitude(),
+                    place.getLongitude(), request.getIsUsingCar());
+            moveMinutes.add(moveMinute);
         }
         placeList.add(place);
-        int moveMinute = getTravelTime(lastPlace.getLatitude(), lastPlace.getLongitude(), place.getLatitude(),
-                place.getLongitude(), request.getIsUsingCar());
-        moveMinutes.add(moveMinute);
         return place;
     }
 
