@@ -63,6 +63,8 @@ public class ResidencyService {
 				.address((String)house.get("address"))
 				.household((Integer)house.get("household"))
 				.type((String)house.get("type"))
+				.price((String)house.get("price"))
+				.imgUrl((String)house.get("img_url"))
 				.latitude((Double)house.get("latitude"))
 				.longitude((Double)house.get("longitude"))
 				.jobList(passingJobList(house))
