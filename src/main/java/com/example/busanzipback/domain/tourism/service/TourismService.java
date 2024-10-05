@@ -49,8 +49,8 @@ public class TourismService {
     private static final String TRANSIT_ROUTE_API_URL = "https://routes.googleapis.com/directions/v2:computeRoutes";
     private final RestaurantRepository restaurantRepository;
 
-    private String CAR_ROUTE_API_KEY_ID="Q1TGnwkYdvbgnvZHItbkoeTJX2XKszJi9WWIyFWs";
-    private String CAR_ROUTE_API_KEY="q114px2dot";
+    private String CAR_ROUTE_API_KEY_ID="q114px2dot";
+    private String CAR_ROUTE_API_KEY="Q1TGnwkYdvbgnvZHItbkoeTJX2XKszJi9WWIyFWs";
     private String TRANSIT_API_KEY="AIzaSyDyhdgZzpvuVkj2yxaqJyd3UiqaiEZ4MK4";
 
 
