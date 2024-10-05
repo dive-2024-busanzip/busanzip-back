@@ -87,6 +87,7 @@ public class TourismService {
 
         String[] sequence = request.getSequence();
         List<Place> placeList = new ArrayList<>();
+        List<Integer> moveMinutes = new ArrayList<>();
         Place lastPlace = null;
         int maxMoveMin = request.getMaxMoveMin();
         boolean isUsingCar = request.getIsUsingCar();
@@ -94,27 +95,27 @@ public class TourismService {
         for (String type : sequence) {
             switch (type) {
                 case "RESTAURANT":
-                    lastPlace = addPlacesToCourse(placeList, restaurantCandidateIds, lastPlace, TravelType.RESTAURANT, maxMoveMin, isUsingCar, restaurantIdx);
+                    lastPlace = addPlacesToCourse(placeList, moveMinutes, restaurantCandidateIds, lastPlace, TravelType.RESTAURANT, maxMoveMin, isUsingCar, restaurantIdx);
                     restaurantIdx++;
                     break;
                 case "SHOPPING":
-                    lastPlace = addPlacesToCourse(placeList, shoppingCandidateIds, lastPlace, TravelType.SHOPPING, maxMoveMin, isUsingCar, shoppingIdx);
+                    lastPlace = addPlacesToCourse(placeList, moveMinutes, shoppingCandidateIds, lastPlace, TravelType.SHOPPING, maxMoveMin, isUsingCar, shoppingIdx);
                     shoppingIdx++;
                     break;
                 case "TOURIST_ATTRACTION":
-                    lastPlace = addPlacesToCourse(placeList, touristAttractionCandidateIds, lastPlace, TravelType.TOURIST_ATTRACTION, maxMoveMin, isUsingCar, touristAttractionIdx);
+                    lastPlace = addPlacesToCourse(placeList, moveMinutes, touristAttractionCandidateIds, lastPlace, TravelType.TOURIST_ATTRACTION, maxMoveMin, isUsingCar, touristAttractionIdx);
                     touristAttractionIdx++;
                     break;
                 case "EXPERIENCE":
-                    lastPlace = addPlacesToCourse(placeList, experienceCandidateIds, lastPlace, TravelType.EXPERIENCE, maxMoveMin, isUsingCar, experienceIdx);
+                    lastPlace = addPlacesToCourse(placeList, moveMinutes, experienceCandidateIds, lastPlace, TravelType.EXPERIENCE, maxMoveMin, isUsingCar, experienceIdx);
                     experienceIdx++;
                     break;
                 case "ACCOMMODATION":
-                    lastPlace = addAccommodationToCourse(placeList, lastPlace, request);
+                    lastPlace = addAccommodationToCourse(placeList, moveMinutes, lastPlace, request);
                     break;
             }
         }
-        return TourismResponse.of(placeList);
+        return TourismResponse.of(placeList, moveMinutes);
     }
 
     private List<List<Long>> getCandidateIds(TourismRequest request) {
@@ -221,7 +222,7 @@ public class TourismService {
         return result;
     }
 
-    private Place addPlacesToCourse(List<Place> placeList, List<Long> candidateIds, Place lastPlace, TravelType travelType, int maxMoveMin, boolean isUsingCar, int idx) {
+    private Place addPlacesToCourse(List<Place> placeList, List<Integer> moveMinutes, List<Long> candidateIds, Place lastPlace, TravelType travelType, int maxMoveMin, boolean isUsingCar, int idx) {
         for (int i= idx; i < candidateIds.size(); i++) {
             Place place = getPlaceById(candidateIds.get(i), travelType);
 
@@ -232,9 +233,10 @@ public class TourismService {
                 return place;
             }
             else {
-                double travelTime = getTravelTime(lastPlace.getLatitude(), lastPlace.getLongitude(), place.getLatitude(), place.getLongitude(), isUsingCar);
+                int travelTime = getTravelTime(lastPlace.getLatitude(), lastPlace.getLongitude(), place.getLatitude(), place.getLongitude(), isUsingCar);
                 if (travelTime < maxMoveMin) {
                     placeList.add(place);
+                    moveMinutes.add(travelTime);
                     System.out.println("다음 장소: " + place.getName());
                     return place;
                 }
@@ -243,7 +245,7 @@ public class TourismService {
         throw new IllegalArgumentException();
     }
 
-    private Place addAccommodationToCourse(List<Place> placeList, Place lastPlace, TourismRequest request) {
+    private Place addAccommodationToCourse(List<Place> placeList, List<Integer> moveMinutes, Place lastPlace, TourismRequest request) {
         String[] keywords = request.getAccommodationKeywords();
         Place place = null;
         double latitude;
@@ -259,6 +261,9 @@ public class TourismService {
             place = getPlaceById(accommodation.getId(), TravelType.ACCOMMODATION);
         }
         placeList.add(place);
+        int moveMinute = getTravelTime(lastPlace.getLatitude(), lastPlace.getLongitude(), place.getLatitude(),
+                place.getLongitude(), request.getIsUsingCar());
+        moveMinutes.add(moveMinute);
         return place;
     }
 

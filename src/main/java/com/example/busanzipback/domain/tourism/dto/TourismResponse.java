@@ -9,8 +9,9 @@ import lombok.Getter;
 @Getter
 public class TourismResponse {
     private List<Place> course;
+    private List<Integer> moveMinutes;
 
-    public static TourismResponse of(List<Place> course) {
-        return new TourismResponse(course);
+    public static TourismResponse of(List<Place> course, List<Integer> moveMinutes) {
+        return new TourismResponse(course, moveMinutes);
     }
 }
