@@ -25,7 +25,7 @@ public class Place {
     private String usageDay; // X(NULL): 맛집, 숙박
     private String holiday; // X(NULL): 맛집, 숙박
     private String usageTime; // X(NULL): 숙박
-    private String imageURL; // X(NULL): 숙박
+    private String imageURL;
     private String usagePrice; // X(NULL): 맛집, 숙박
     private String contact;
     private String repMenu; // X(NULL): 쇼핑, 명소, 체험, 숙박
@@ -99,6 +99,7 @@ public class Place {
                 .latitude(accommodation.getLatitude())
                 .longitude(accommodation.getLongitude())
                 .contact(accommodation.getPhoneNumber())
+                .imageURL(accommodation.getImageUrl())
                 .build();
     }
 }
