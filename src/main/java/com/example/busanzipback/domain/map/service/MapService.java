@@ -11,6 +11,8 @@ import com.example.busanzipback.domain.map.dto.response.GetFestivityDetailRespon
 import com.example.busanzipback.domain.map.dto.response.GetFestivityResponse;
 import com.example.busanzipback.domain.map.dto.response.GetRestaurantDetailResponse;
 import com.example.busanzipback.domain.map.dto.response.GetRestaurantResponse;
+import com.example.busanzipback.domain.map.dto.response.GetShoppingDetailResponse;
+import com.example.busanzipback.domain.map.dto.response.GetShoppingResponse;
 import com.example.busanzipback.domain.map.entity.Festivity;
 import com.example.busanzipback.domain.map.entity.Restaurant;
 import com.example.busanzipback.domain.map.exception.AttractionNotFoundException;
@@ -19,9 +21,12 @@ import com.example.busanzipback.domain.map.exception.MapErrorCode;
 import com.example.busanzipback.domain.map.exception.RestaurantNotFoundException;
 import com.example.busanzipback.domain.map.dto.response.GetRestaurantResponse;
 import com.example.busanzipback.domain.map.exception.MapErrorCode;
+import com.example.busanzipback.domain.map.exception.ShoppingNotFoundException;
 import com.example.busanzipback.domain.map.repository.FestivityRepository;
 import com.example.busanzipback.domain.map.repository.RestaurantRepository;
+import com.example.busanzipback.domain.tourism.entity.Shopping;
 import com.example.busanzipback.domain.tourism.entity.TouristAttraction;
+import com.example.busanzipback.domain.tourism.repository.ShoppingRepository;
 import com.example.busanzipback.domain.tourism.repository.TouristAttractionRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -33,6 +38,7 @@ public class MapService {
 	private final RestaurantRepository restaurantRepository;
 	private final FestivityRepository festivityRepository;
 	private final TouristAttractionRepository attractionRepository;
+	private final ShoppingRepository shoppingRepository;
 
 	public List<GetRestaurantResponse> getRestaurantList(Double latitude, Double longitude) {
 		checkPositionValue(latitude, longitude);
@@ -63,6 +69,16 @@ public class MapService {
 		TouristAttraction attraction = attractionRepository.findById(attractionId).orElseThrow(
 			AttractionNotFoundException::new);
 		return GetAttractionDetailResponse.from(attraction);
+	}
+	public List<GetShoppingResponse> getShoppingList(Double latitude, Double longitude) {
+		checkPositionValue(latitude, longitude);
+		return shoppingRepository.findNearbyLocations(longitude, latitude).stream().map(GetShoppingResponse::from).toList();
+	}
+
+	public GetShoppingDetailResponse getShopping(Long shoppingId) {
+		Shopping shopping = shoppingRepository.findById(shoppingId).orElseThrow(
+			ShoppingNotFoundException::new);
+		return GetShoppingDetailResponse.from(shopping);
 	}
 
 	private void checkPositionValue(Double latitude, Double longitude){

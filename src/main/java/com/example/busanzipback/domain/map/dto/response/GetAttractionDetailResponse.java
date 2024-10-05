@@ -8,7 +8,6 @@ import lombok.Builder;
 
 @Builder
 public record GetAttractionDetailResponse(Long attractionId,
-										  TravelType travelType,
 										  String name,
 										  Double latitude,
 										  Double longitude,
@@ -31,7 +30,6 @@ public record GetAttractionDetailResponse(Long attractionId,
 	public static GetAttractionDetailResponse from(TouristAttraction attraction){
 		return GetAttractionDetailResponse.builder()
 			.attractionId((attraction.getId()))
-			.travelType(attraction.getTravelType())
 			.name((attraction.getName()))
 			.latitude(attraction.getLatitude())
 			.longitude(attraction.getLongitude())

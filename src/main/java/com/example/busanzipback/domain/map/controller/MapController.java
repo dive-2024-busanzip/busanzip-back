@@ -17,6 +17,8 @@ import com.example.busanzipback.domain.map.dto.response.GetFestivityDetailRespon
 import com.example.busanzipback.domain.map.dto.response.GetFestivityResponse;
 import com.example.busanzipback.domain.map.dto.response.GetRestaurantDetailResponse;
 import com.example.busanzipback.domain.map.dto.response.GetRestaurantResponse;
+import com.example.busanzipback.domain.map.dto.response.GetShoppingDetailResponse;
+import com.example.busanzipback.domain.map.dto.response.GetShoppingResponse;
 import com.example.busanzipback.domain.map.service.MapService;
 
 import lombok.RequiredArgsConstructor;
@@ -71,5 +73,20 @@ public class MapController {
 		@PathVariable Long attractionId
 	){
 		return SuccessResponse.of(mapService.getAttraction(attractionId)).asHttp(HttpStatus.OK);
+	}
+
+	@GetMapping("/shopping/nearby")
+	public ResponseEntity<SuccessResponse<List<GetShoppingResponse>>> getShoppingNearby(
+		@RequestParam(value = "latitude") Double latitude,
+		@RequestParam(value = "longitude") Double longitude
+	){
+		return SuccessResponse.of(mapService.getShoppingList(latitude, longitude)).asHttp(HttpStatus.OK);
+	}
+
+	@GetMapping("/shopping/{shoppingId}")
+	public ResponseEntity<SuccessResponse<GetShoppingDetailResponse>> getShoppingDetail(
+		@PathVariable Long shoppingId
+	){
+		return SuccessResponse.of(mapService.getShopping(shoppingId)).asHttp(HttpStatus.OK);
 	}
 }
